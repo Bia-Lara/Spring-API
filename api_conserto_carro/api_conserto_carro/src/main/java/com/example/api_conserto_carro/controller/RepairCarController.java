@@ -1,15 +1,15 @@
 package com.example.api_conserto_carro.controller;
-import com.example.api_conserto_carro.repair.Repair;
-import com.example.api_conserto_carro.repair.RepairDatasDto;
-import com.example.api_conserto_carro.repair.RepairDto;
-import com.example.api_conserto_carro.repair.RepositoryRepair;
+import com.example.api_conserto_carro.mechanic.Mechanic;
+import com.example.api_conserto_carro.repair.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.util.List;
 
 @RestController
@@ -17,20 +17,44 @@ import java.util.List;
 public class RepairCarController {
     @Autowired
     private RepositoryRepair repository;
+    @Autowired
+    private RepairService service;
 
     @PostMapping
     @Transactional
-    public void register(@RequestBody @Valid RepairDto data){
+    public ResponseEntity<String> register(@RequestBody @Valid RepairDto data){
+
         repository.save(new Repair(data));
+        return ResponseEntity.ok("criado com sucesso!");
     }
 
     @GetMapping
     public Page<Repair> findAll(Pageable pagination){
-        return repository.findAll(pagination);
+        return repository.findByAtivoTrue(pagination);
     }
 
     @GetMapping("showRepairs")
-    public List<RepairDatasDto> showRepairs(){
-        return repository.findAll().stream().map(RepairDatasDto::new).toList();
+    public ResponseEntity<List<RepairDatasDto>> showRepairs(){
+        var repairs = repository.findAll().stream().map(RepairDatasDto::new).toList();
+        return ResponseEntity.ok(repairs);
+    }
+
+    @GetMapping("repair/{id}")
+    public ResponseEntity<RepairDatasDto> findById(@PathVariable Long id) {
+        return repository
+                .findById(id)
+                .map(repair -> ResponseEntity.ok(new RepairDatasDto(repair)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("repair/{id}")
+    public ResponseEntity<String> changeData(@PathVariable Long id, @RequestBody Mechanic mechanic) {
+        return service.changeDados(id, mechanic.getNome(), mechanic.getAnosExperiencia());
+    }
+
+    @PutMapping("repair/data-de-saida/{id}")
+    @Transactional
+    public ResponseEntity<String> changeDataSaida(Long id, String data) {
+        return service.changeData(id, data);
     }
 }

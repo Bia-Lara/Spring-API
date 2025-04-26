@@ -19,6 +19,9 @@ public record RepairDto(
         @Pattern(regexp = "\\d{2}/\\d{2}/\\d{4}")
         String dataSaida,
 
+        @NotBlank
+        boolean ativo,
+
         MechanicDto mechanic,
         VehicleDto vehicle
 ) {

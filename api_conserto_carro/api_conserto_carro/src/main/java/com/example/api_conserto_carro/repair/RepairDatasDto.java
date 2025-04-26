@@ -6,21 +6,25 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public record RepairDatasDto(
+        Long id,
         String dataEntrada,
         String dataSaida,
         String nome,
         String marca,
-        String modelo
+        String modelo,
+        boolean ativo
 
 ) {
 
     public RepairDatasDto(Repair repair){
         this(
+                repair.getId(),
                 repair.getDataEntrada(),
                 repair.getDataSaida(),
                 repair.getMechanic().getNome(),
                 repair.getVehicle().getMarca(),
-                repair.getVehicle().getModelo()
+                repair.getVehicle().getModelo(),
+                repair.isAtivo()
         );
     }
 
