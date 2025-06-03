@@ -15,10 +15,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/consertos")
 public class RepairCarController {
-    @Autowired
+
     private RepositoryRepair repository;
+
     @Autowired
     private RepairService service;
+
+    public RepairCarController(RepositoryRepair repository){
+        this.repository = repository;
+    }
 
     @PostMapping
     @Transactional
@@ -50,6 +55,14 @@ public class RepairCarController {
     @PutMapping("repair/{id}")
     public ResponseEntity<String> changeData(@PathVariable Long id, @RequestBody Mechanic mechanic) {
         return service.changeDados(id, mechanic.getNome(), mechanic.getAnosExperiencia());
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public void remove(@PathVariable Long id){
+        Repair repair = repository.getReferenceById(id);
+
+        repair.remove();
     }
 
     @PutMapping("repair/data-de-saida/{id}")

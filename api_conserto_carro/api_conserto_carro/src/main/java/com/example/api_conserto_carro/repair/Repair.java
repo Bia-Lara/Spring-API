@@ -7,18 +7,24 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Table(name = "consertos")
 @Entity(name = "Conserto")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Repair {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String dataEntrada;
+
+    @EqualsAndHashCode.Include
+    @Column(nullable = false, unique = true, updatable = false)
+    private final String uuid = UUID.randomUUID().toString();
+
     @Setter
     private String dataSaida;
     private boolean ativo;
@@ -27,9 +33,11 @@ public class Repair {
     private Mechanic mechanic;
     @Embedded
     private Vehicle vehicle;
+    private Boolean active;
 
 
     public Repair(RepairDto dto) {
+        this.active = true;
         this.dataEntrada = dto.dataEntrada();
         this.dataSaida = dto.dataSaida();
         this.ativo = dto.ativo();
@@ -45,4 +53,7 @@ public class Repair {
         mechanic.setAnosExperiencia(experience);
     }
 
+    public void remove(){
+        this.active = false;
+    }
 }
