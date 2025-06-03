@@ -59,10 +59,12 @@ public class RepairCarController {
 
     @DeleteMapping("/{id}")
     @Transactional
-    public void remove(@PathVariable Long id){
+    public ResponseEntity remove(@PathVariable Long id){
         Repair repair = repository.getReferenceById(id);
 
         repair.remove();
+
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("repair/data-de-saida/{id}")
