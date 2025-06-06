@@ -2,7 +2,7 @@ package com.example.api_conserto_carro.user;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record authenticationData(
+public record AuthenticationData(
         @NotBlank
         String login,
 
